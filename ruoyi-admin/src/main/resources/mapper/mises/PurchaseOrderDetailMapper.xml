@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mises.mapper.PurchaseOrderDetailMapper">
+    
+    <resultMap type="PurchaseOrderDetail" id="PurchaseOrderDetailResult">
+        <result property="detailId"    column="detail_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="unitPrice"    column="unit_price"    />
+    </resultMap>
+
+    <sql id="selectPurchaseOrderDetailVo">
+        select detail_id, product_id, quantity, unit_price from purchase_order_detail
+    </sql>
+
+    <select id="selectPurchaseOrderDetailList" parameterType="PurchaseOrderDetail" resultMap="PurchaseOrderDetailResult">
+        <include refid="selectPurchaseOrderDetailVo"/>
+        <where>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="unitPrice != null "> and unit_price = #{unitPrice}</if>
+        </where>
+    </select>
+    
+    <select id="selectPurchaseOrderDetailByDetailId" parameterType="Long" resultMap="PurchaseOrderDetailResult">
+        <include refid="selectPurchaseOrderDetailVo"/>
+        where detail_id = #{detailId}
+    </select>
+
+    <insert id="insertPurchaseOrderDetail" parameterType="PurchaseOrderDetail" useGeneratedKeys="true" keyProperty="detailId">
+        insert into purchase_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="unitPrice != null">unit_price,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="unitPrice != null">#{unitPrice},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePurchaseOrderDetail" parameterType="PurchaseOrderDetail">
+        update purchase_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
+        </trim>
+        where detail_id = #{detailId}
+    </update>
+
+    <delete id="deletePurchaseOrderDetailByDetailId" parameterType="Long">
+        delete from purchase_order_detail where detail_id = #{detailId}
+    </delete>
+
+    <delete id="deletePurchaseOrderDetailByDetailIds" parameterType="String">
+        delete from purchase_order_detail where detail_id in 
+        <foreach item="detailId" collection="array" open="(" separator="," close=")">
+            #{detailId}
+        </foreach>
+    </delete>
+</mapper>

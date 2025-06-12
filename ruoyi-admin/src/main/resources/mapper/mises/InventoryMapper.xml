@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mises.mapper.InventoryMapper">
+    
+    <resultMap type="Inventory" id="InventoryResult">
+        <result property="productId"    column="product_id"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="lastUpdated"    column="last_updated"    />
+    </resultMap>
+
+    <sql id="selectInventoryVo">
+        select product_id, quantity, last_updated from inventory
+    </sql>
+
+    <select id="selectInventoryList" parameterType="Inventory" resultMap="InventoryResult">
+        <include refid="selectInventoryVo"/>
+        <where>  
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="quantity != null "> and quantity = #{quantity}</if>
+            <if test="lastUpdated != null "> and last_updated = #{lastUpdated}</if>
+        </where>
+    </select>
+    
+    <select id="selectInventoryByProductId" parameterType="Long" resultMap="InventoryResult">
+        <include refid="selectInventoryVo"/>
+        where product_id = #{productId}
+    </select>
+
+    <insert id="insertInventory" parameterType="Inventory">
+        insert into inventory
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="lastUpdated != null">last_updated,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="lastUpdated != null">#{lastUpdated},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInventory" parameterType="Inventory">
+        update inventory
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="lastUpdated != null">last_updated = #{lastUpdated},</if>
+        </trim>
+        where product_id = #{productId}
+    </update>
+
+    <delete id="deleteInventoryByProductId" parameterType="Long">
+        delete from inventory where product_id = #{productId}
+    </delete>
+
+    <delete id="deleteInventoryByProductIds" parameterType="String">
+        delete from inventory where product_id in 
+        <foreach item="productId" collection="array" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+    </delete>
+</mapper>
